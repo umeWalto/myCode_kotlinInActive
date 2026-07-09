@@ -13,18 +13,17 @@ enum class Movie {
 
 // Зал, содержит в себе массив из количества мест, и свой Id
 class Hall (
-    val row: Int,
-    val column: Int,
+    val rows: Int,
+    val columns: Int,
     val hallId: String
 ) {
     private val seats = ArrayList<Seat>()
 
     init {
-        createHall(row, column)
+        initializeSeats(rows, columns)
     }
 
-    private fun createHall (row: Int, column: Int){
-        seats.clear()
+    private fun initializeSeats (row: Int, column: Int){
         when {
             (row > 0 && column > 0) -> {
                 for (rowIndex in 0..<row) {
@@ -40,24 +39,28 @@ class Hall (
             (column <= 0) -> {
                 throw IllegalArgumentException("column must be more than 0.")
             }
-            else -> throw IllegalArgumentException("Unknown error")
         }
     }
 
-    fun getSeatIndex(row: Int, column: Int): Int {
-        return row * this.column + column
+    private fun toIndex(row: Int, col: Int) = row * columns + col
+
+    private fun isValid(row: Int, col: Int) = (row in 0..<this.rows && col in 0..<this.columns)
+
+    fun isSeatBooked(row: Int, col: Int): Boolean{
+        if (!isValid(row, col)) throw IllegalArgumentException("row or column out of bounds")
+        return seats[toIndex(row, col)].isBooked
     }
 
-    fun getBooked(row: Int, column: Int): Boolean {
-        return seats[row * this.column + column].isBooked
-    }
-
-    fun setBooked(row: Int, column: Int) {
-        seats[row * this.column + column].isBooked = true
+    fun bookSeat(row: Int, col: Int) : Boolean {
+        if (!isValid(row, col)) return false
+        val index = toIndex(row, col)
+        if (seats[index].isBooked) return false
+        seats[index].isBooked = true
+        return true
     }
 
     // Геттер для размеров поля
-    val hallSize = seats.size
+    val totalSeats = seats.size
 }
 
 // Место содержит свой ряд и колнку, а также заданный конструктором false на вопрос занято или нет
