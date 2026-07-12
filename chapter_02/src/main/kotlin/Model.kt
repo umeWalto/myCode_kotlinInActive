@@ -60,7 +60,7 @@ class Hall (
     }
 
     // Геттер для размеров поля
-    val totalSeats = seats.size
+    val totalSeats get() = seats.size
 }
 
 // Место содержит свой ряд и колнку, а также заданный конструктором false на вопрос занято или нет
